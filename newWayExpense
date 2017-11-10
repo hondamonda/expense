@@ -1,0 +1,172 @@
+import java.io.PrintStream;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
+public class newWayExpense {
+
+	public static void main(String[] argv) throws Exception {
+
+		@SuppressWarnings("resource")
+		PrintStream printStream = new PrintStream("C:\\Users\\viki\\Desktop\\buky\\razhod.txt");
+		
+		String input;
+		input = JOptionPane.showInputDialog(null, "                 arr0   arr1   arr2   arr3   arr4\r\n" + "\r\n"
+				+ "arr0 = Enter oil(in format 000,000 = 000000 or 12,34 = 12340)\r\n"
+				+ "arr1 =   1(nothing);   2(winter);   3(klimatic)\r\n" + "arr2 = Enter expense(don't use comma) \r\n"
+				+ "				           KIA         (DIZEL - 11.00 lit)\r\n"
+				+ "				           PEUGEOT   (gaz - 11.13 lit;      petrol- 10.10)\r\n"
+				+ "				           W-BORA    (gaz - 11.73 lit;      petrol- 10.18)\r\n"
+				+ "arr3 = Input km v Sofiq (36)\r\n" + "arr4 = Input km do Sofiq (168)\r\n" + "\r\n"
+				+ "ENTER NUMBER WITH SPACE !!!", "Input data", JOptionPane.PLAIN_MESSAGE);
+
+		int arr[] = new int[5];
+		String[] str = input.trim().split("\\s+");
+		for (int i = 0; i < 5; i++) {
+			// exception
+			if (str.length < 5) {
+				JOptionPane.showMessageDialog(null, "Not enough data", "WARNING", JOptionPane.WARNING_MESSAGE);
+				break;
+			} else {
+				arr[i] = Integer.parseInt(str[i]);
+			}
+		}
+
+		System.out.println("*****************************************");
+		printStream.println("*****************************************");
+
+		
+		if (arr[2] == 1100) {
+			System.out.println("KIA - diesel");
+			printStream.println("KIA - diesel");
+		}
+		if (arr[2] == 1173) {
+			System.out.println("W-BORA - gaz");
+			printStream.println("W-BORA - gaz");
+		}
+		if (arr[2] == 1018) {
+			System.out.println("W-BORA - petrol");
+			printStream.println("W-BORA - petrol");
+		}
+
+		float arO = arr[0];
+		float oilExpense = arO / 1000;
+		float oil = 0;
+		int option = arr[1];
+		if (option < 1 || option > 3) {
+			System.out.println("*****************************************");
+			printStream.println("*****************************************");
+			System.out.println("Wrong option! arr1 =   1(nothing);   2(winter);   3(klimatic)");
+			JOptionPane.showMessageDialog(null,
+					"Wrong option! \r\n\r\n 1 = nothing\r\n 2 = winter\r\n 3 = klimatic\r\n", "arr1 = ",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		} else if (option == 3) {
+			oil = (float) (oilExpense / 1.10);
+		} else if (option == 2) {
+			oil = (float) (oilExpense / 1.05);
+		} else if (option == 1) {
+			oil = oilExpense;
+		}
+		float expense = expenses(arr[2]);
+		if (expense == 0) {
+			return;
+		}
+		int kmVSofiq = arr[3];
+		int kmDoSofiq = arr[4];
+		int doIvSofiq = kmVSofiq + kmDoSofiq;
+		float city = (expense / 100) + (3 * (expense / 100) / 100);
+		float sofia = (kmDoSofiq * expense / 100)
+				+ ((kmVSofiq * expense / 100) + (kmVSofiq * expense / 100) * 25 / 100);
+		float allSofia = oil / sofia;
+		int clearSofia = (int) Math.floor(allSofia);
+		System.out.println("-----------------------------------------");
+		printStream.println("-----------------------------------------");
+		System.out.println(clearSofia + " курса до София");
+		printStream.println(clearSofia + " курса до София");
+		float litrySofia = clearSofia * sofia;
+		float litryCity = oil - litrySofia;
+		float kmCity = litryCity / city;
+		int clearKmCity = (int) Math.ceil(kmCity);
+		if (clearKmCity % 2 != 0)
+			clearKmCity = clearKmCity + 1;
+		int allkm = clearSofia * doIvSofiq + clearKmCity;
+
+		// print all Liters
+		float allLiters1 = Math.round((allkm * expense / 100) * 1000);
+		// закръгляваме Math.round(а * 1000)/1000
+		float allLiters = allLiters1 / 1000;
+		System.out.println("Общо км = " + allkm + " км , литри(кг) = " + allLiters);
+		printStream.println("Общо км = " + allkm + " км , литри(кг) = " + allLiters);
+
+		// print city km and adding expense fuel ( +3%)
+		float dobavkaCity1 = Math.round(((clearKmCity * expense / 100 + (3 * clearKmCity * expense / 100) / 100) - clearKmCity * expense / 100)* 1000);
+		// закръгляваме Math.round(а * 1000)/1000
+		float dobavkaCity = dobavkaCity1 / 1000;
+		System.out.println("Градско " + clearKmCity + " km,  +3% = + " + dobavkaCity + " l(kg)");
+		printStream.println("Градско " + clearKmCity + " km,  +3% = + " + dobavkaCity + " l(kg)");
+
+		// print Sofia km and adding expense fuel
+		int kmInSofia = kmVSofiq * clearSofia;
+		float dobavkaSofia1 = Math.round(((kmInSofia * expense / 100 + (25 * kmInSofia * expense / 100) / 100) - kmInSofia * expense / 100) * 1000);
+		// закръгляваме Math.round(а * 1000)/1000
+		float dobavkaSofia = dobavkaSofia1 / 1000;
+		System.out.println("София " + kmInSofia + " км, +25% = + " + dobavkaSofia + " l(kg)");
+		printStream.println("София " + kmInSofia + " км, +25% = + " + dobavkaSofia + " l(kg)");
+
+		// print air conditioner percent expense = 10%
+		int percent = 10;
+		// in winter = 5%
+		if (option == 2) {
+			percent = 5;
+		}
+		float temporaryFuel = allLiters + dobavkaCity + dobavkaSofia;
+		float winterOrAirConditioner1 = Math.round((temporaryFuel + percent * temporaryFuel / 100 - temporaryFuel) * 1000);
+		float winterOrAirConditioner = winterOrAirConditioner1 / 1000; // закръгляваме Math.round(а * 1000 / 1000
+
+		if (option == 1) {
+			winterOrAirConditioner = 0;
+		}
+		if (option == 2) {
+			System.out.println("Зимни + 5% = + " + winterOrAirConditioner + " l(kg)");
+			printStream.println("Зимни + 5% = + " + winterOrAirConditioner + " l(kg)");
+		}
+		if (option == 3) {
+			System.out.println("Климатик + 10% = + " + winterOrAirConditioner + " l(kg)");
+			printStream.println("Климатик + 10% = + " + winterOrAirConditioner + " l(kg)");
+		}
+
+		// print expense
+		float liters1 = Math.round((temporaryFuel + winterOrAirConditioner) * 1000);
+		// закръгляваме Math.round(а * 1000)/1000
+		float liters = liters1 / 1000;
+		System.out.printf("Разход %.3f литри(кг),%nЗаредени %.3f литри(кг)%n", liters, oilExpense);
+		printStream.printf("Разход %.3f литри(кг),%nЗаредени %.3f литри(кг)%n", liters, oilExpense);
+		System.out.println("*****************************************");
+		printStream.printf("*****************************************");
+	}
+
+	
+	private static float expenses(float n) {
+		float expense = n / 100;
+		ArrayList<Float> expenses = new ArrayList<Float>();
+		expenses.add((float) 11.00);
+		expenses.add((float) 10.55);
+		expenses.add((float) 11.13);
+		expenses.add((float) 10.10);
+		expenses.add((float) 11.73);
+		expenses.add((float) 10.18);
+		while (!expenses.contains(expense)) {
+			System.out.println("*****************************************");
+			System.out.println("Wrong expence! arr2 ");
+			JOptionPane.showMessageDialog(null, "Wrong expence! Enter expense(don't use comma) \r\n"
+					+ "				+ 				           KIA         (DIZEL - 11.00 lit)\r\n"
+					+ "				+				           PEUGEOT   (gaz - 11.13 lit;      petrol- 10.10)\r\n"
+					+ "				+				           W-BORA    (gaz - 11.73 lit;      petrol- 10.18)",
+					"arr2 = ", JOptionPane.WARNING_MESSAGE);
+			expense = 0;
+			break;
+		}
+		return expense;
+
+	}
+}
